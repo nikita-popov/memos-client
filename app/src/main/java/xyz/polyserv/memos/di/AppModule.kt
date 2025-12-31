@@ -9,15 +9,18 @@ import xyz.polyserv.memos.data.local.database.MemoDao
 import xyz.polyserv.memos.data.local.database.SyncQueueDao
 import xyz.polyserv.memos.data.remote.MemosApiService
 import xyz.polyserv.memos.sync.NetworkConnectivityManager
+import xyz.polyserv.memos.data.local.SharedPrefManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import retrofit2.Retrofit
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
@@ -35,19 +38,49 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(
+        sharedPrefManager: SharedPrefManager
+    ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.BASIC
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        // Auth interceptor
+        val authInterceptor = Interceptor { chain ->
+            val requestBuilder = chain.request().newBuilder()
+            sharedPrefManager.getAccessToken()?.let { token ->
+                if (token.isNotBlank()) {
+                    requestBuilder.addHeader("Authorization", "Bearer $token")
+                }
             }
+            chain.proceed(requestBuilder.build())
+        }
+
+        // URL interceptor
+        val hostSelectionInterceptor = Interceptor { chain ->
+            var request = chain.request()
+            val savedUrlString = sharedPrefManager.getServerUrl()
+
+            val newBaseUrl = savedUrlString.toHttpUrlOrNull()
+
+            if (newBaseUrl != null) {
+                val newUrl = request.url.newBuilder()
+                    .scheme(newBaseUrl.scheme)
+                    .host(newBaseUrl.host)
+                    .port(newBaseUrl.port)
+                    .build()
+
+                request = request.newBuilder()
+                    .url(newUrl)
+                    .build()
+            }
+            chain.proceed(request)
         }
 
         return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(hostSelectionInterceptor) // Важен порядок!
             .addInterceptor(loggingInterceptor)
-            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
             .build()
     }
 
@@ -56,7 +89,7 @@ object AppModule {
     fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl("http://localhost/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import xyz.polyserv.memos.data.model.SyncStatus
+import xyz.polyserv.memos.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun SyncStatusIndicator(
@@ -24,10 +26,10 @@ fun SyncStatusIndicator(
     modifier: Modifier = Modifier
 ) {
     val (icon, color, label) = when (syncStatus) {
-        SyncStatus.SYNCED -> Triple(Icons.Default.Check, Color(0xFF4CAF50), "Синхронизировано")
-        SyncStatus.PENDING -> Triple(Icons.Default.CloudOff, Color(0xFFFFC107), "Ожидание")
-        SyncStatus.SYNCING -> Triple(Icons.Default.Cloud, Color(0xFF2196F3), "Синхронизация...")
-        SyncStatus.FAILED -> Triple(Icons.Default.Error, Color(0xFFF44336), "Ошибка")
+        SyncStatus.SYNCED -> Triple(Icons.Default.Check, Color(0xFF4CAF50), stringResource(id = R.string.synced))
+        SyncStatus.PENDING -> Triple(Icons.Default.CloudOff, Color(0xFFFFC107), stringResource(id = R.string.waiting))
+        SyncStatus.SYNCING -> Triple(Icons.Default.Cloud, Color(0xFF2196F3), stringResource(id = R.string.sync))
+        SyncStatus.FAILED -> Triple(Icons.Default.Error, Color(0xFFF44336), stringResource(id = R.string.error))
     }
 
     Row(
@@ -83,7 +85,7 @@ fun OfflineBanner(
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
-                    text = "Оффлайн режим",
+                    text = stringResource(id = R.string.offline_mode),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White,
                     modifier = Modifier.padding(start = 8.dp)
@@ -95,7 +97,7 @@ fun OfflineBanner(
                 modifier = Modifier.height(28.dp)
             ) {
                 Text(
-                    text = if (isSyncing) "Синхронизация..." else "Синхронизировать",
+                    text = if (isSyncing) stringResource(id = R.string.syncing) else stringResource(id = R.string.sync),
                     style = MaterialTheme.typography.labelSmall
                 )
             }

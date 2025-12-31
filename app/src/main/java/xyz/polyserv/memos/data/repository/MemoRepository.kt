@@ -142,6 +142,8 @@ class MemoRepository @Inject constructor(
             return
         }
 
+        Timber.d("Sync started")
+
         val queueItems = localDataSource.getSyncQueue()
         for (item in queueItems) {
             try {

@@ -9,9 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import xyz.polyserv.memos.presentation.viewmodel.MemoViewModel
+import xyz.polyserv.memos.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +32,7 @@ fun CreateMemoScreen(
     ) {
         // Top App Bar
         TopAppBar(
-            title = { Text("Новая заметка") },
+            title = { Text(stringResource(id = R.string.new_note)) },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -58,7 +60,7 @@ fun CreateMemoScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            placeholder = { Text("Начните писать...") },
+            placeholder = { Text(stringResource(id = R.string.start_writing)) },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 focusedContainerColor = MaterialTheme.colorScheme.surface

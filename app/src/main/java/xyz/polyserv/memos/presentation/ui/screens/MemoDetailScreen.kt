@@ -10,11 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.presentation.ui.components.SyncStatusIndicator
 import xyz.polyserv.memos.presentation.viewmodel.MemoViewModel
+import xyz.polyserv.memos.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,8 +33,8 @@ fun MemoDetailScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Удалить заметку?") },
-            text = { Text("Это действие нельзя отменить.") },
+            title = { Text(stringResource(id = R.string.delete_note)) },
+            text = { Text(stringResource(id = R.string.this_action_cant_be_undone)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -41,12 +43,12 @@ fun MemoDetailScreen(
                         onBackClick()
                     }
                 ) {
-                    Text("Удалить")
+                    Text(stringResource(id = R.string.delete))
                 }
             },
             dismissButton = {
                 Button(onClick = { showDeleteDialog = false }) {
-                    Text("Отмена")
+                    Text(stringResource(id = R.string.cancel))
                 }
             }
         )
@@ -58,7 +60,7 @@ fun MemoDetailScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         TopAppBar(
-            title = { Text("Заметка") },
+            title = { Text(stringResource(id = R.string.note)) },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -91,7 +93,7 @@ fun MemoDetailScreen(
 
             // Metadata
             Text(
-                text = "Создано: ${java.text.SimpleDateFormat("dd.MM.yyyy HH:mm",
+                text = "${stringResource(id = R.string.created)}: ${java.text.SimpleDateFormat("dd.MM.yyyy HH:mm",
                     java.util.Locale.getDefault()).format(memo.createdTs)}",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -99,7 +101,7 @@ fun MemoDetailScreen(
 
             if (memo.updatedTs != memo.createdTs) {
                 Text(
-                    text = "Обновлено: ${java.text.SimpleDateFormat("dd.MM.yyyy HH:mm",
+                    text = "${stringResource(id = R.string.updated)} ${java.text.SimpleDateFormat("dd.MM.yyyy HH:mm",
                         java.util.Locale.getDefault()).format(memo.updatedTs)}",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

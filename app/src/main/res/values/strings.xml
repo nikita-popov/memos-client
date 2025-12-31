@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Memos Client</string>
+    <string name="synced">Synced</string>
+    <string name="waiting">Waiting</string>
+    <string name="sync">Sync</string>
+    <string name="syncing">Syncing</string>
+    <string name="error">Error</string>
+    <string name="offline_mode">Offline mode</string>
+    <string name="new_note">New note</string>
+    <string name="start_writing">Start writing…</string>
+    <string name="delete_note">Delete note?</string>
+    <string name="this_action_cant_be_undone">This action can\'t be undone!</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="note">Note</string>
+    <string name="updated">Updated</string>
+    <string name="created">Created</string>
+    <string name="ok">OK</string>
+    <string name="my_notes">My notes</string>
+    <string name="no_notes">No notes</string>
+    <string name="create_first_note">Create first note</string>
+    <string name="search">Search…</string>
 </resources>

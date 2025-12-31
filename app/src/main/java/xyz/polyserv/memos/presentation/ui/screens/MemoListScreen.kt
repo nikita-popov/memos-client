@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
@@ -32,6 +33,7 @@ import xyz.polyserv.memos.presentation.viewmodel.MemoViewModel
 fun MemoListScreen(
     viewModel: MemoViewModel = hiltViewModel(),
     onMemoClick: (Memo) -> Unit,
+    onSettingsClick: () -> Unit,
     onCreateClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -65,10 +67,10 @@ fun MemoListScreen(
                 onDismissRequest = { viewModel.clearError() },
                 confirmButton = {
                     Button(onClick = { viewModel.clearError() }) {
-                        Text("OK")
+                        Text(stringResource(id = R.string.ok))
                     }
                 },
-                title = { Text("Ошибка") },
+                title = { Text(stringResource(id = R.string.error)) },
                 text = { Text(uiState.error) }
             )
         }
@@ -86,7 +88,7 @@ fun MemoListScreen(
                         }
                     )
                 } else {
-                    Text("Мои Заметки")
+                    Text(stringResource(id = R.string.my_notes))
                 }
             },
             actions = {
@@ -108,6 +110,9 @@ fun MemoListScreen(
                             MaterialTheme.colorScheme.onSurface
                     )
                 }
+                IconButton(onClick = onSettingsClick) {
+                    Icon(Icons.Default.Settings, contentDescription = "Настройки")
+                }
             }
         )
 
@@ -127,12 +132,12 @@ fun MemoListScreen(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        "Нет заметок",
+                        stringResource(id = R.string.no_notes),
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        "Создайте первую заметку, нажав на кнопку внизу",
+                        stringResource(id = R.string.create_first_note),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -186,7 +191,7 @@ fun SearchBar(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        placeholder = { Text("Поиск...") },
+        placeholder = { Text(stringResource(id = R.string.search)) },
         singleLine = true,
         shape = RoundedCornerShape(8.dp),
         trailingIcon = {

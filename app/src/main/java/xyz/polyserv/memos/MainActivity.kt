@@ -16,6 +16,7 @@ import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.presentation.ui.screens.CreateMemoScreen
 import xyz.polyserv.memos.presentation.ui.screens.MemoDetailScreen
 import xyz.polyserv.memos.presentation.ui.screens.MemoListScreen
+import xyz.polyserv.memos.presentation.ui.screens.SettingsScreen
 import xyz.polyserv.memos.presentation.ui.theme.MemosTheme
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -49,7 +50,8 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onCreateClick = {
                                     navController.navigate("create_memo")
-                                }
+                                },
+                                onSettingsClick = { navController.navigate("settings") }
                             )
                         }
 
@@ -58,6 +60,12 @@ class MainActivity : ComponentActivity() {
                                 onBackClick = {
                                     navController.popBackStack()
                                 }
+                            )
+                        }
+
+                        composable("settings") {
+                            SettingsScreen(
+                                onBackClick = { navController.popBackStack() }
                             )
                         }
 
