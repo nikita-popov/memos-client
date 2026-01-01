@@ -7,7 +7,7 @@ import javax.inject.Inject
 class RemoteDataSource @Inject constructor(
     private val apiService: MemosApiService
 ) {
-    suspend fun fetchAllMemos(): List<Memo> {
+    suspend fun getAllMemos(): List<Memo> {
         val response = apiService.listMemos()
         return response.memos.map { memoData ->
             Memo(

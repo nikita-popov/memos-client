@@ -68,6 +68,7 @@ object AppModule {
                     .scheme(newBaseUrl.scheme)
                     .host(newBaseUrl.host)
                     .port(newBaseUrl.port)
+                    .encodedPath("/api/v1" + request.url.encodedPath)
                     .build()
 
                 request = request.newBuilder()
@@ -87,6 +88,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
+        val json = Json { ignoreUnknownKeys = true } // Полезно игнорировать лишние поля
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
             .baseUrl("http://localhost/")

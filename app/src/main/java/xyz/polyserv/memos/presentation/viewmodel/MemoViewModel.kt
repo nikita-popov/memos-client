@@ -1,5 +1,6 @@
 package xyz.polyserv.memos.presentation.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import xyz.polyserv.memos.data.repository.MemoRepository
 import xyz.polyserv.memos.sync.NetworkConnectivityManager
 import xyz.polyserv.memos.sync.SyncScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,13 +36,14 @@ data class MemoUiState(
 class MemoViewModel @Inject constructor(
     private val memoRepository: MemoRepository,
     private val connectivityManager: NetworkConnectivityManager,
-    private val syncScheduler: SyncScheduler
+    private val syncScheduler: SyncScheduler,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = mutableStateOf(MemoUiState())
     val uiState: State<MemoUiState> = _uiState
 
-    val memos: StateFlow<List<Memo>> = memoRepository.getAllMemos()
+    val memos: StateFlow<List<Memo>> = memoRepository.getMemos()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
@@ -62,7 +65,7 @@ class MemoViewModel @Inject constructor(
     }
 
     private fun setupSyncScheduler() {
-        syncScheduler.scheduleSyncWork()
+        syncScheduler.scheduleSyncWork(context)
     }
 
     private fun observeNetworkChanges() {
@@ -77,7 +80,8 @@ class MemoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                val memo = memoRepository.createMemo(content)
+                val mem = Memo(content=content)
+                val memo = memoRepository.addMemo(mem)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     selectedMemo = null,
@@ -98,7 +102,8 @@ class MemoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                memoRepository.updateMemo(id, content)
+                val mem = Memo(id = id, content=content)
+                memoRepository.updateMemo(mem)
                 _uiState.value = _uiState.value.copy(isLoading = false)
             } catch (e: Exception) {
                 Timber.e(e, "Failed to update memo")
@@ -157,7 +162,7 @@ class MemoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(syncInProgress = true)
-                memoRepository.syncPendingChanges()
+                memoRepository.syncWithServer()
                 _uiState.value = _uiState.value.copy(syncInProgress = false)
             } catch (e: Exception) {
                 Timber.e(e, "Failed to sync")
@@ -165,6 +170,17 @@ class MemoViewModel @Inject constructor(
                     syncInProgress = false,
                     error = "Ошибка синхронизации: ${e.message}"
                 )
+            }
+        }
+    }
+
+    fun syncNow() {
+        viewModelScope.launch {
+            try {
+                SyncScheduler(context).syncNow(context)
+                Timber.d("Синхронизация запущена")
+            } catch (e: Exception) {
+                Timber.e("Sync failed: ${e.message}")
             }
         }
     }

@@ -1,39 +1,44 @@
 package xyz.polyserv.memos.sync
 
 import android.content.Context
-import androidx.work.BackoffPolicy
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class SyncScheduler @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val connectivityManager: NetworkConnectivityManager
+class SyncScheduler@Inject constructor(
+    @ApplicationContext private val context: Context
 ) {
-    fun scheduleSyncWork() {
+
+    fun scheduleSyncWork(context: Context) {
         val syncRequest = PeriodicWorkRequestBuilder<SyncWorker>(
-            15, TimeUnit.MINUTES,
-            5, TimeUnit.MINUTES
-        ).setBackoffCriteria(
-            BackoffPolicy.EXPONENTIAL,
             15, TimeUnit.MINUTES
-        ).build()
+        )
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .setBackoffCriteria(
+                BackoffPolicy.EXPONENTIAL,
+                15,
+                TimeUnit.MINUTES
+            )
+            .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            SYNC_WORK_NAME,
+            "memo_sync_work",
             ExistingPeriodicWorkPolicy.KEEP,
             syncRequest
         )
     }
 
-    fun cancelSyncWork() {
-        WorkManager.getInstance(context).cancelUniqueWork(SYNC_WORK_NAME)
-    }
-
-    companion object {
-        const val SYNC_WORK_NAME = "memo_sync_work"
+    fun syncNow(context: Context) {
+        val oneTimeRequest = OneTimeWorkRequestBuilder<SyncWorker>().build()
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "memo_sync_now",
+            ExistingWorkPolicy.REPLACE,
+            oneTimeRequest
+        )
     }
 }

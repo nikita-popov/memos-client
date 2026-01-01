@@ -97,18 +97,8 @@ fun MemoListScreen(
                 ) {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 }
-                IconButton(
-                    onClick = { viewModel.syncPendingChanges() },
-                    enabled = !uiState.syncInProgress
-                ) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "Sync",
-                        tint = if (uiState.syncInProgress)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.onSurface
-                    )
+                IconButton(onClick = { viewModel.syncNow() }) {
+                    Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.sync))
                 }
                 IconButton(onClick = onSettingsClick) {
                     Icon(Icons.Default.Settings, contentDescription = "Настройки")
