@@ -18,6 +18,10 @@ class MemoRepository @Inject constructor(
 
     fun getMemos(): Flow<List<Memo>> = localDataSource.getAllMemosFlow()
 
+    suspend fun getMemoById(memoId: String): Memo? {
+        return localDataSource.getMemoById(memoId)
+    }
+
     suspend fun addMemo(memo: Memo) {
         localDataSource.saveMemo(memo)
         localDataSource.addToSyncQueue(

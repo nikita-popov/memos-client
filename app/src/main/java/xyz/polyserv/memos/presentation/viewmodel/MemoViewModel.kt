@@ -65,6 +65,25 @@ class MemoViewModel @Inject constructor(
         syncScheduler.scheduleSyncWork(context)
     }
 
+    fun loadMemoById(memoId: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                val memo = memoRepository.getMemoById(memoId)
+                _uiState.value = _uiState.value.copy(
+                    selectedMemo = memo,
+                    isLoading = false
+                )
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to load memo")
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Failed to load memo: ${e.message}"
+                )
+            }
+        }
+    }
+
     fun createMemo(content: String) {
         viewModelScope.launch {
             try {

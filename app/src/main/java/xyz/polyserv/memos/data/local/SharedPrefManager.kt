@@ -16,12 +16,10 @@ class SharedPrefManager @Inject constructor(
     companion object {
         private const val KEY_SERVER_URL = "server_url"
         private const val KEY_ACCESS_TOKEN = "access_token"
-        // Default URL (for emu)
-        private const val DEFAULT_URL = "http://10.54.1.1:5230"
+        private const val DEFAULT_URL = ""
     }
 
     fun saveServerUrl(url: String) {
-        // Clean slash
         val cleanUrl = if (url.endsWith("/")) url.dropLast(1) else url
         prefs.edit { putString(KEY_SERVER_URL, cleanUrl) }
     }

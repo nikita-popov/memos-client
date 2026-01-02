@@ -80,12 +80,12 @@ class MainActivity : ComponentActivity() {
                         ) { backStackEntry ->
                             val memoId = backStackEntry.arguments?.getString("memoId") ?: return@composable
                             MemoDetailScreen(
-                                memo = Memo(id = memoId, content = ""),
+                                memoId = memoId,
                                 onBackClick = {
                                     navController.popBackStack()
                                 },
                                 onEditClick = { memo ->
-                                    navController.navigate("edit_memo/${memoId}")
+                                    navController.navigate("edit_memo/${memo.id}")
                                 }
                             )
                         }
