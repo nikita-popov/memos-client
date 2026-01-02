@@ -47,7 +47,6 @@ class MemoViewModel @Inject constructor(
     init {
         setupNetworkListener()
         setupSyncScheduler()
-        observeNetworkChanges()
     }
 
     private fun setupNetworkListener() {
@@ -64,14 +63,6 @@ class MemoViewModel @Inject constructor(
 
     private fun setupSyncScheduler() {
         syncScheduler.scheduleSyncWork(context)
-    }
-
-    private fun observeNetworkChanges() {
-        viewModelScope.launch {
-            connectivityManager.isConnected.collect { isOnline ->
-                _uiState.value = _uiState.value.copy(isOnline = isOnline)
-            }
-        }
     }
 
     fun createMemo(content: String) {
@@ -100,8 +91,8 @@ class MemoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                val mem = Memo(id = id, content=content)
-                memoRepository.updateMemo(mem)
+                val memo = Memo(id = id, content=content)
+                memoRepository.updateMemo(memo)
                 _uiState.value = _uiState.value.copy(isLoading = false)
             } catch (e: Exception) {
                 Timber.e(e, "Failed to update memo")
@@ -175,7 +166,7 @@ class MemoViewModel @Inject constructor(
     fun syncNow() {
         viewModelScope.launch {
             try {
-                SyncScheduler(context).syncNow(context)
+                syncScheduler.syncNow(context)
                 Timber.d("Syncing started")
             } catch (e: Exception) {
                 Timber.e("Sync failed: ${e.message}")

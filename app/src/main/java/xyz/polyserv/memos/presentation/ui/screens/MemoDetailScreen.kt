@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import timber.log.Timber
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.presentation.ui.components.SyncStatusIndicator
 import xyz.polyserv.memos.presentation.viewmodel.MemoViewModel
@@ -81,11 +82,15 @@ fun MemoDetailScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            Timber.d("Opened memo: ${memo.id}")
+            Timber.d("Opened memo: ${memo.content}")
+
             SyncStatusIndicator(syncStatus = memo.syncStatus)
 
             Text(
-                text = memo.content,
+                text = memo.content.ifEmpty { "No content" },
                 style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(top = 16.dp)
             )
 

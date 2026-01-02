@@ -60,15 +60,13 @@ class MainActivity : ComponentActivity() {
 
                         composable("create_memo") {
                             CreateMemoScreen(
-                                onBackClick = {
-                                    navController.popBackStack()
-                                }
+                                onBackClick = { navController.popBackStack() }
                             )
                         }
 
                         composable("settings") {
                             SettingsScreen(
-                                onBackClick = { navController.popBackStack() }
+                                onBackClick = {navController.popBackStack() }
                             )
                         }
 
@@ -87,7 +85,7 @@ class MainActivity : ComponentActivity() {
                                     navController.popBackStack()
                                 },
                                 onEditClick = { memo ->
-                                    navController.navigate("edit_memo/${memo.id}")
+                                    navController.navigate("edit_memo/${memoId}")
                                 }
                             )
                         }

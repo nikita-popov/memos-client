@@ -1,6 +1,7 @@
 package xyz.polyserv.memos.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 import xyz.polyserv.memos.data.local.LocalDataSource
 import xyz.polyserv.memos.data.remote.RemoteDataSource
 import xyz.polyserv.memos.data.model.Memo
@@ -62,7 +63,10 @@ class MemoRepository @Inject constructor(
 
             // Saving locally (update or create)
             for (remoteMemo in remoteMemos) {
-                localDataSource.saveMemo(remoteMemo)
+                val saved = localDataSource.saveMemo(remoteMemo)
+                if (saved) {
+                    Timber.d("Memo saved: ${remoteMemo.id}")
+                }
             }
             // Sync local changes
             val syncQueue = localDataSource.getSyncQueue()

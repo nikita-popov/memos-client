@@ -5,6 +5,7 @@ import xyz.polyserv.memos.data.local.database.SyncQueueDao
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.data.model.SyncQueueItem
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 import javax.inject.Inject
 
 class LocalDataSource @Inject constructor(
@@ -17,12 +18,21 @@ class LocalDataSource @Inject constructor(
 
     suspend fun getMemoById(id: String): Memo? = memoDao.getMemoById(id)
 
-    suspend fun saveMemo(memo: Memo) {
+    suspend fun saveMemo(memo: Memo): Boolean {
         val existing = memoDao.getMemoById(memo.id)
         if (existing != null) {
-            memoDao.updateMemo(memo)
+            if (existing.updatedTs < memo.updatedTs) {
+                memoDao.updateMemo(memo)
+                Timber.d("Memo updated")
+                return true
+            } else {
+                Timber.d("Memo already exists")
+                return false
+            }
         } else {
             memoDao.insertMemo(memo)
+            Timber.d("Memo inserted")
+            return true
         }
     }
 

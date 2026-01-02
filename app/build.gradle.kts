@@ -105,8 +105,8 @@ dependencies {
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation("androidx.hilt:hilt-work:1.2.0")
-    implementation("androidx.hilt:hilt-compiler:1.2.0")
+    implementation(libs.androidx.hilt.work.v120)
+    kapt(libs.androidx.hilt.compiler.v120)
 
     // Retrofit & OkHttp
     implementation(libs.retrofit)
@@ -138,7 +138,6 @@ dependencies {
         }
     }
 
-    // Или явно указываем новую версию
     implementation("org.jetbrains:annotations:23.0.0")
 
     // Testing

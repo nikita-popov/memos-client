@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SyncScheduler@Inject constructor(
-    @ApplicationContext private val context: Context
+    //@ApplicationContext private val context: Context
 ) {
 
     fun scheduleSyncWork(context: Context) {
