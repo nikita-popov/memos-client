@@ -80,7 +80,7 @@ fun OfflineBanner(
             ) {
                 Icon(
                     imageVector = Icons.Default.CloudOff,
-                    contentDescription = "Offline",
+                    contentDescription = stringResource(id = R.string.offline),
                     tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )

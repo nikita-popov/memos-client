@@ -35,7 +35,7 @@ fun CreateMemoScreen(
             title = { Text(stringResource(id = R.string.new_note)) },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                 }
             },
             actions = {
@@ -48,7 +48,7 @@ fun CreateMemoScreen(
                     },
                     enabled = content.isNotBlank() && !uiState.isLoading
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = "Save")
+                    Icon(Icons.Default.Check, contentDescription = stringResource(id = R.string.save))
                 }
             }
         )

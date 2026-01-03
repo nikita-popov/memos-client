@@ -7,8 +7,10 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import xyz.polyserv.memos.R
 import xyz.polyserv.memos.presentation.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,6 +25,7 @@ fun SettingsScreen(
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
             snackbarHostState.showSnackbar("Settings saved")
+            //snackbarHostState.showSnackbar(stringResource(id = R.string.settings_saved))
         }
     }
 
@@ -30,10 +33,10 @@ fun SettingsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Server settings") },
+                title = { Text(stringResource(id = R.string.server_settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                     }
                 }
             )
@@ -55,8 +58,8 @@ fun SettingsScreen(
             OutlinedTextField(
                 value = uiState.serverUrl,
                 onValueChange = { viewModel.updateUrl(it) },
-                label = { Text("Server URL") },
-                placeholder = { Text("http://192.168.1.5:5230") },
+                label = { Text(stringResource(id = R.string.server_url)) },
+                placeholder = { Text("https://memos.example.com/") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -64,8 +67,8 @@ fun SettingsScreen(
             OutlinedTextField(
                 value = uiState.accessToken,
                 onValueChange = { viewModel.updateToken(it) },
-                label = { Text("Access Token (Bearer)") },
-                placeholder = { Text("Copy token from Memos") },
+                label = { Text(stringResource(id = R.string.access_token)) },
+                placeholder = { Text(stringResource(id = R.string.copy_token_from_memos)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -78,11 +81,11 @@ fun SettingsScreen(
             ) {
                 Icon(Icons.Default.Save, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Save")
+                Text(stringResource(id = R.string.save))
             }
 
             Text(
-                text = "Note: Make sure that the server is accessible over the network.",
+                text = stringResource(id = R.string.note_make_sure_that_server_is_accessible_over_network),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

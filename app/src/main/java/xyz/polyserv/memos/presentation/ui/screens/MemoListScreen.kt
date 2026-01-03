@@ -92,13 +92,13 @@ fun MemoListScreen(
                 IconButton(
                     onClick = { showSearchBar = !showSearchBar }
                 ) {
-                    Icon(Icons.Default.Search, contentDescription = "Search")
+                    Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search))
                 }
                 IconButton(onClick = { viewModel.syncNow() }) {
                     Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.sync))
                 }
                 IconButton(onClick = onSettingsClick) {
-                    Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings))
                 }
             }
         )
@@ -160,7 +160,7 @@ fun MemoListScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Create Memo")
+                Icon(Icons.Default.Add, contentDescription = stringResource(id = R.string.create_memo))
             }
         }
     }

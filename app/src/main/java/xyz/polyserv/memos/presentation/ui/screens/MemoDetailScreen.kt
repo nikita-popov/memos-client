@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import timber.log.Timber
 import xyz.polyserv.memos.data.model.Memo
+import xyz.polyserv.memos.presentation.ui.components.MarkdownText
 import xyz.polyserv.memos.presentation.ui.components.SyncStatusIndicator
 import xyz.polyserv.memos.presentation.viewmodel.MemoViewModel
 import xyz.polyserv.memos.R
@@ -70,16 +71,16 @@ fun MemoDetailScreen(
             title = { Text(stringResource(id = R.string.note)) },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                 }
             },
             actions = {
                 if (memo != null) {
                     IconButton(onClick = { onEditClick(memo) }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(id = R.string.edit))
                     }
                     IconButton(onClick = { showDeleteDialog = true }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(id = R.string.delete))
                     }
                 }
             }
@@ -104,11 +105,15 @@ fun MemoDetailScreen(
                 SyncStatusIndicator(syncStatus = memo.syncStatus)
 
                 Text(
-                    text = memo.content.ifEmpty { "No content" },
+                    text = memo.content.ifEmpty { stringResource(id = R.string.no_content) },
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(top = 16.dp)
                 )
+                /*MarkdownText(
+                    markdown = memo.content.ifEmpty { "No content" },
+                    modifier = Modifier.padding(top = 16.dp)
+                )*/
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -142,7 +147,7 @@ fun MemoDetailScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = androidx.compose.ui.Alignment.Center
             ) {
-                Text("Memo not found")
+                Text(stringResource(id = R.string.memo_not_found))
             }
         }
     }

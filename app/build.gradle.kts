@@ -79,7 +79,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.1")
 
     // Jetpack Compose
-    val composeBom = platform("androidx.compose:compose-bom:2023.10.01")
+    val composeBom = platform("androidx.compose:compose-bom:2024.04.01")
     implementation(composeBom)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -135,6 +135,10 @@ dependencies {
     }
 
     implementation("org.jetbrains:annotations:23.0.0")
+
+    // Markdown
+    implementation("com.mikepenz:multiplatform-markdown-renderer:0.27.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.27.0")
 
     // Testing
     testImplementation(libs.junit)
