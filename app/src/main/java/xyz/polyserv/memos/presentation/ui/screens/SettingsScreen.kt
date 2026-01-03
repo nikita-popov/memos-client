@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +67,7 @@ fun SettingsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.server_settings)) },
+                title = { Text(stringResource(id = R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
@@ -85,9 +86,8 @@ fun SettingsScreen(
             // Appearance Section
             Text(
                 text = stringResource(id = R.string.appearance),
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp)
             )
 
             SettingsItem(
@@ -102,13 +102,19 @@ fun SettingsScreen(
                 onClick = { showLanguageDialog = true }
             )
 
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             // Connection Section
             Text(
-                text = "Connection",
+                text = stringResource(id = R.string.connection),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
+            )
+
+            Text(
+                text = stringResource(id = R.string.note_make_sure_that_server_is_accessible_over_network),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             OutlinedTextField(
@@ -139,12 +145,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(stringResource(id = R.string.save))
             }
-
-            Text(
-                text = stringResource(id = R.string.note_make_sure_that_server_is_accessible_over_network),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }

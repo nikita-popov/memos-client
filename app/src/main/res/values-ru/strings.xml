@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="synced">Синхронизировано</string>
+    <string name="waiting">Ожидание</string>
+    <string name="sync">Синхронизация</string>
+    <string name="syncing">Синхронизация…</string>
+    <string name="error">Ошибка</string>
+    <string name="offline_mode">Оффлайн режим</string>
+    <string name="new_note">Новая заметка</string>
+    <string name="start_writing">Начните писать…</string>
+    <string name="delete_note">Удалить заметку?</string>
+    <string name="this_action_cant_be_undone">Это действие нельзя отменить!</string>
+    <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
+    <string name="note">Заметка</string>
+    <string name="updated">Обновлено</string>
+    <string name="created">Создано</string>
+    <string name="ok">ОК</string>
+    <string name="my_notes">Мои заметки</string>
+    <string name="no_notes">Нет заметок</string>
+    <string name="create_first_note">Создать первую заметку</string>
+    <string name="search">Поиск…</string>
+    <string name="no_content">Нет содержимого</string>
+    <string name="memo_not_found">Заметка не найдена</string>
+    <string name="edit">Редактировать</string>
+    <string name="back">Назад</string>
+    <string name="save">Сохранить</string>
+    <string name="settings">Настройки</string>
+    <string name="create_memo">Создать заметку</string>
+    <string name="settings_saved">Настройки сохранены</string>
+    <string name="server_settings">Настройки сервера</string>
+    <string name="server_url">URL сервера</string>
+    <string name="access_token">Токен доступа</string>
+    <string name="copy_token_from_memos">Скопируйте токен из memos</string>
+    <string name="note_make_sure_that_server_is_accessible_over_network">Примечание: Убедитесь, что сервер доступен по сети.</string>
+    <string name="offline">Оффлайн</string>
+    <string name="appearance">Внешний вид</string>
+    <string name="theme">Тема</string>
+    <string name="theme_system">Системная</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="select_theme">Выберите тему</string>
+    <string name="language">Язык</string>
+    <string name="select_language">Выберите язык</string>
+    <string name="connection">Подключение</string>
+</resources>

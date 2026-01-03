@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Memos Client</string>
+    <string name="app_name" translatable="false">Memos Client</string>
     <string name="synced">Synced</string>
     <string name="waiting">Waiting</string>
     <string name="sync">Sync</string>
