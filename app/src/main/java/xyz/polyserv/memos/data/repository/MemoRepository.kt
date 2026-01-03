@@ -7,6 +7,7 @@ import xyz.polyserv.memos.data.remote.RemoteDataSource
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.data.model.SyncQueueItem
 import xyz.polyserv.memos.data.model.SyncAction
+import xyz.polyserv.memos.data.model.SyncStatus
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -62,6 +63,16 @@ class MemoRepository @Inject constructor(
 
     suspend fun syncWithServer() {
         try {
+            // Set SYNCING for all memos in sync queue
+            val syncQueue = localDataSource.getSyncQueue()
+            for (queueItem in syncQueue) {
+                val memo = localDataSource.getMemoById(queueItem.memoId)
+                if (memo != null && memo.syncStatus == SyncStatus.PENDING) {
+                    val syncingMemo = memo.copy(syncStatus = SyncStatus.SYNCING)
+                    localDataSource.saveMemo(syncingMemo)
+                }
+            }
+
             // First get memos from server
             val remoteMemos = remoteDataSource.getAllMemos()
 
@@ -72,33 +83,55 @@ class MemoRepository @Inject constructor(
                     Timber.d("Memo saved: ${remoteMemo.id}")
                 }
             }
+
             // Sync local changes
-            val syncQueue = localDataSource.getSyncQueue()
             for (queueItem in syncQueue) {
                 try {
                     when (queueItem.action) {
                         SyncAction.CREATE -> {
                             val memo = localDataSource.getMemoById(queueItem.memoId)
                             if (memo != null) {
-                                remoteDataSource.createMemo(memo.content)
+                                val response = remoteDataSource.createMemo(memo.content)
+                                val updatedMemo = memo.copy(
+                                    syncStatus = SyncStatus.SYNCED,
+                                    lastSyncTime = System.currentTimeMillis(),
+                                    isLocalOnly = false,
+                                    serverId = response.id ?: memo.serverId
+                                )
+                                localDataSource.saveMemo(updatedMemo)
+                                Timber.d("Memo synced successfully: ${memo.id}")
                             }
                         }
                         SyncAction.UPDATE -> {
                             val memo = localDataSource.getMemoById(queueItem.memoId)
                             if (memo != null) {
                                 remoteDataSource.updateMemo(memo.serverId, memo.content)
+                                val updatedMemo = memo.copy(
+                                    syncStatus = SyncStatus.SYNCED,
+                                    lastSyncTime = System.currentTimeMillis()
+                                )
+                                localDataSource.saveMemo(updatedMemo)
+                                Timber.d("Memo updated and synced: ${memo.id}")
                             }
                         }
                         SyncAction.DELETE -> {
                             remoteDataSource.deleteMemo(queueItem.memoId)
+                            Timber.d("Memo deleted on server: ${queueItem.memoId}")
                         }
                     }
                     localDataSource.removeSyncQueueItem(queueItem.id)
                 } catch (e: Exception) {
+                    val memo = localDataSource.getMemoById(queueItem.memoId)
+                    if (memo != null) {
+                        val failedMemo = memo.copy(syncStatus = SyncStatus.FAILED)
+                        localDataSource.saveMemo(failedMemo)
+                        Timber.e(e, "Failed to sync memo: ${memo.id}")
+                    }
                     e.printStackTrace()
                 }
             }
         } catch (e: Exception) {
+            Timber.e(e, "Sync with server failed")
             e.printStackTrace()
         }
     }

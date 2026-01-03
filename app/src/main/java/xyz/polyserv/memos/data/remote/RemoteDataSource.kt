@@ -1,8 +1,8 @@
 package xyz.polyserv.memos.data.remote
 
+import javax.inject.Inject
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.data.model.MemoRequest
-import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(
     private val apiService: MemosApiService
