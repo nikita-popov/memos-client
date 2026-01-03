@@ -34,4 +34,13 @@
     <string name="copy_token_from_memos">Copy token from memos</string>
     <string name="note_make_sure_that_server_is_accessible_over_network">Note: Make sure that server is accessible over network.</string>
     <string name="offline">Offline</string>
+    <string name="appearance">Appearance</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="select_theme">Select Theme</string>
+    <string name="language">Language</string>
+    <string name="select_language">Select Language</string>
+    <string name="connection">Connection</string>
 </resources>

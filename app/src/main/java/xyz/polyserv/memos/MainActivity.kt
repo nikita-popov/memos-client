@@ -6,25 +6,36 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dagger.hilt.android.AndroidEntryPoint
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import timber.log.Timber
+import xyz.polyserv.memos.data.local.SharedPrefManager
 import xyz.polyserv.memos.data.model.Memo
 import xyz.polyserv.memos.presentation.ui.screens.CreateMemoScreen
 import xyz.polyserv.memos.presentation.ui.screens.MemoDetailScreen
 import xyz.polyserv.memos.presentation.ui.screens.MemoListScreen
 import xyz.polyserv.memos.presentation.ui.screens.SettingsScreen
 import xyz.polyserv.memos.presentation.ui.theme.MemosTheme
-import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
+import xyz.polyserv.memos.util.LocaleHelper
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var sharedPrefManager: SharedPrefManager
+
+    private val themeModeFlow = MutableStateFlow(xyz.polyserv.memos.data.model.ThemeMode.SYSTEM)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,8 +44,17 @@ class MainActivity : ComponentActivity() {
             Timber.plant(Timber.DebugTree())
         }
 
+        // Apply saved language
+        val savedLanguage = sharedPrefManager.getAppLanguage()
+        LocaleHelper.setLocale(this, savedLanguage)
+
+        // Load saved theme
+        themeModeFlow.value = sharedPrefManager.getThemeMode()
+
         setContent {
-            MemosTheme {
+            val themeMode by themeModeFlow.collectAsState()
+
+            MemosTheme(themeMode = themeMode) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -66,7 +86,14 @@ class MainActivity : ComponentActivity() {
 
                         composable("settings") {
                             SettingsScreen(
-                                onBackClick = {navController.popBackStack() }
+                                onBackClick = {navController.popBackStack() },
+                                onThemeChanged = { newTheme ->
+                                    themeModeFlow.value = newTheme
+                                },
+                                onLanguageChanged = { newLanguage ->
+                                    LocaleHelper.setLocale(this@MainActivity, newLanguage)
+                                    recreate()
+                                }
                             )
                         }
 
