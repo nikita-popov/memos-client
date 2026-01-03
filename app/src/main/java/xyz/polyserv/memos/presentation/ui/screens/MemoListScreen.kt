@@ -45,122 +45,122 @@ fun MemoListScreen(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        // Offline Banner
-        AnimatedVisibility(visible = !uiState.isOnline) {
-            OfflineBanner(
-                onSyncClick = { viewModel.syncPendingChanges() },
-                isSyncing = uiState.syncInProgress
-            )
-        }
-
-        // Error Dialog
-        if (uiState.error != null) {
-            AlertDialog(
-                onDismissRequest = { viewModel.clearError() },
-                confirmButton = {
-                    Button(onClick = { viewModel.clearError() }) {
-                        Text(stringResource(id = R.string.ok))
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    if (showSearchBar) {
+                        SearchBar(
+                            query = uiState.searchQuery,
+                            onQueryChange = { viewModel.searchMemos(it) },
+                            onClose = {
+                                showSearchBar = false
+                                viewModel.clearSearch()
+                            }
+                        )
+                    } else {
+                        Text(stringResource(id = R.string.my_notes))
                     }
                 },
-                title = { Text(stringResource(id = R.string.error)) },
-                text = { Text(uiState.error) }
+                actions = {
+                    IconButton(
+                        onClick = { showSearchBar = !showSearchBar }
+                    ) {
+                        Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search))
+                    }
+                    IconButton(onClick = { viewModel.syncNow() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.sync))
+                    }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings))
+                    }
+                }
             )
-        }
-
-        // Top App Bar
-        TopAppBar(
-            title = {
-                if (showSearchBar) {
-                    SearchBar(
-                        query = uiState.searchQuery,
-                        onQueryChange = { viewModel.searchMemos(it) },
-                        onClose = {
-                            showSearchBar = false
-                            viewModel.clearSearch()
-                        }
-                    )
-                } else {
-                    Text(stringResource(id = R.string.my_notes))
-                }
-            },
-            actions = {
-                IconButton(
-                    onClick = { showSearchBar = !showSearchBar }
-                ) {
-                    Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search))
-                }
-                IconButton(onClick = { viewModel.syncNow() }) {
-                    Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.sync))
-                }
-                IconButton(onClick = onSettingsClick) {
-                    Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings))
-                }
-            }
-        )
-
-        // Memos List or Search Results
-        val displayMemos = if (uiState.searchQuery.isNotEmpty()) {
-            uiState.filteredMemos
-        } else {
-            memos
-        }
-
-        if (displayMemos.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        stringResource(id = R.string.no_notes),
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        stringResource(id = R.string.create_first_note),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 0.dp)
-            ) {
-                items(displayMemos) { memo ->
-                    MemoCard(
-                        memo = memo,
-                        onClick = { onMemoClick(memo) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-        }
-
-        // FAB
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
+        },
+        floatingActionButton = {
             FloatingActionButton(
                 onClick = onCreateClick,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(id = R.string.create_memo))
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            // Offline Banner
+            AnimatedVisibility(visible = !uiState.isOnline) {
+                OfflineBanner(
+                    onSyncClick = { viewModel.syncPendingChanges() },
+                    isSyncing = uiState.syncInProgress
+                )
+            }
+
+            // Error Dialog
+            if (uiState.error != null) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.clearError() },
+                    confirmButton = {
+                        Button(onClick = { viewModel.clearError() }) {
+                            Text(stringResource(id = R.string.ok))
+                        }
+                    },
+                    title = { Text(stringResource(id = R.string.error)) },
+                    text = { Text(uiState.error) }
+                )
+            }
+
+            // Memos List or Search Results
+            val displayMemos = if (uiState.searchQuery.isNotEmpty()) {
+                uiState.filteredMemos
+            } else {
+                memos
+            }
+
+            if (displayMemos.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            stringResource(id = R.string.no_notes),
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            stringResource(id = R.string.create_first_note),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 8.dp,
+                        bottom = 88.dp // FAB padding
+                    )
+                ) {
+                    items(displayMemos) { memo ->
+                        MemoCard(
+                            memo = memo,
+                            onClick = { onMemoClick(memo) },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
             }
         }
     }

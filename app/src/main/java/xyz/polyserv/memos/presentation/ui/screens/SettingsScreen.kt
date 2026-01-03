@@ -75,11 +75,13 @@ fun SettingsScreen(
                 }
             )
         }
-    ) { padding ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(padding)
+                .fillMaxSize()
+                .padding(paddingValues)
                 .padding(16.dp)
+                .padding(bottom = 16.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

@@ -2,6 +2,8 @@ package xyz.polyserv.memos.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -62,92 +64,100 @@ fun MemoDetailScreen(
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        TopAppBar(
-            title = { Text(stringResource(id = R.string.note)) },
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
-                }
-            },
-            actions = {
-                if (memo != null) {
-                    IconButton(onClick = { onEditClick(memo) }) {
-                        Icon(Icons.Default.Edit, contentDescription = stringResource(id = R.string.edit))
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(id = R.string.note)) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                     }
-                    IconButton(onClick = { showDeleteDialog = true }) {
-                        Icon(Icons.Default.Delete, contentDescription = stringResource(id = R.string.delete))
+                },
+                actions = {
+                    if (memo != null) {
+                        IconButton(onClick = { onEditClick(memo) }) {
+                            Icon(Icons.Default.Edit, contentDescription = stringResource(id = R.string.edit))
+                        }
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(Icons.Default.Delete, contentDescription = stringResource(id = R.string.delete))
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (memo != null) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp)
+                        .padding(bottom = 16.dp)
+                ) {
+                    Timber.d("Opened memo: ${memo.id}")
+                    Timber.d("Opened memo: ${memo.content}")
 
-        if (uiState.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = androidx.compose.ui.Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (memo != null) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Timber.d("Opened memo: ${memo.id}")
-                Timber.d("Opened memo: ${memo.content}")
+                    SyncStatusIndicator(syncStatus = memo.syncStatus)
 
-                SyncStatusIndicator(syncStatus = memo.syncStatus)
-
-                Text(
-                    text = memo.content.ifEmpty { stringResource(id = R.string.no_content) },
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-                /*MarkdownText(
-                    markdown = memo.content.ifEmpty { "No content" },
-                    modifier = Modifier.padding(top = 16.dp)
-                )*/
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Metadata
-                Text(
-                    text = "${stringResource(id = R.string.created)}: ${
-                        java.text.SimpleDateFormat(
-                            "dd.MM.yyyy HH:mm",
-                            java.util.Locale.getDefault()
-                        ).format(memo.createdTs)
-                    }",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                if (memo.updatedTs != memo.createdTs) {
                     Text(
-                        text = "${stringResource(id = R.string.updated)} ${
+                        text = memo.content.ifEmpty { stringResource(id = R.string.no_content) },
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                    /*MarkdownText(
+                        markdown = memo.content.ifEmpty { "No content" },
+                        modifier = Modifier.padding(top = 16.dp)
+                    )*/
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Metadata
+                    Text(
+                        text = "${stringResource(id = R.string.created)}: ${
                             java.text.SimpleDateFormat(
                                 "dd.MM.yyyy HH:mm",
                                 java.util.Locale.getDefault()
-                            ).format(memo.updatedTs)
+                            ).format(memo.createdTs)
                         }",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+
+                    if (memo.updatedTs != memo.createdTs) {
+                        Text(
+                            text = "${stringResource(id = R.string.updated)} ${
+                                java.text.SimpleDateFormat(
+                                    "dd.MM.yyyy HH:mm",
+                                    java.util.Locale.getDefault()
+                                ).format(memo.updatedTs)
+                            }",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
                 }
-            }
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = androidx.compose.ui.Alignment.Center
-            ) {
-                Text(stringResource(id = R.string.memo_not_found))
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    Text(stringResource(id = R.string.memo_not_found))
+                }
             }
         }
     }
