@@ -1,9 +1,7 @@
 package xyz.polyserv.memos.util
 
 import android.app.Activity
-import android.content.Context
 import android.content.res.Configuration
-import android.os.Build
 import java.util.Locale
 import xyz.polyserv.memos.data.model.AppLanguage
 
@@ -20,11 +18,7 @@ object LocaleHelper {
     }
 
     private fun getSystemLocale(): Locale {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Locale.getDefault(Locale.Category.DISPLAY)
-        } else {
-            Locale.getDefault()
-        }
+        return Locale.getDefault(Locale.Category.DISPLAY)
     }
 
     fun getDisplayName(language: AppLanguage, currentLocale: Locale): String {

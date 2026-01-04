@@ -116,10 +116,6 @@ dependencies {
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
-    kapt(libs.androidx.hilt.compiler)
-
-    // Network Connectivity
-    implementation(libs.androidx.work.runtime.ktx)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)

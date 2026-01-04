@@ -3,6 +3,7 @@ package xyz.polyserv.memos.presentation.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
@@ -18,9 +19,9 @@ import xyz.polyserv.memos.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateMemoScreen(
-    viewModel: MemoViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: MemoViewModel = hiltViewModel()
 ) {
     val uiState = viewModel.uiState.value
     var content by remember { mutableStateOf("") }
@@ -35,7 +36,7 @@ fun CreateMemoScreen(
             title = { Text(stringResource(id = R.string.new_note)) },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                 }
             },
             actions = {
