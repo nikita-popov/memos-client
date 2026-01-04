@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -26,10 +26,10 @@ import xyz.polyserv.memos.R
 @Composable
 fun MemoDetailScreen(
     memoId: String,
+    modifier: Modifier = Modifier,
     viewModel: MemoViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    onEditClick: (Memo) -> Unit,
-    modifier: Modifier = Modifier
+    onEditClick: (Memo) -> Unit
 ) {
     val uiState = viewModel.uiState.value
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -70,7 +70,7 @@ fun MemoDetailScreen(
                 title = { Text(stringResource(id = R.string.note)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                     }
                 },
                 actions = {
@@ -127,24 +127,14 @@ fun MemoDetailScreen(
 
                     // Metadata
                     Text(
-                        text = "${stringResource(id = R.string.created)}: ${
-                            java.text.SimpleDateFormat(
-                                "dd.MM.yyyy HH:mm",
-                                java.util.Locale.getDefault()
-                            ).format(memo.createdTs)
-                        }",
+                        text = "${stringResource(id = R.string.created)}: ${memo.createTime}",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    if (memo.updatedTs != memo.createdTs) {
+                    if (memo.updateTime != memo.createTime) {
                         Text(
-                            text = "${stringResource(id = R.string.updated)} ${
-                                java.text.SimpleDateFormat(
-                                    "dd.MM.yyyy HH:mm",
-                                    java.util.Locale.getDefault()
-                                ).format(memo.updatedTs)
-                            }",
+                            text = "${stringResource(id = R.string.updated)}: ${memo.updateTime}",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)

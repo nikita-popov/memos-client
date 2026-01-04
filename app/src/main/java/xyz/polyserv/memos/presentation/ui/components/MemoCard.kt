@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import xyz.polyserv.memos.data.model.Memo
 
@@ -35,18 +34,15 @@ fun MemoCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = memo.content.take(100),
+                    text = memo.content,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
                 SyncStatusIndicator(syncStatus = memo.syncStatus, compact = true)
             }
 
             Text(
-                text = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm",
-                    java.util.Locale.getDefault()).format(memo.updatedTs),
+                text = "${memo.createTime} [${memo.updateTime}]",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)

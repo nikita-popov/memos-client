@@ -183,8 +183,8 @@ class MemoRepository @Inject constructor(
                         )
                         localDataSource.saveMemo(syncedMemo)
                     } else {
-                        Timber.d("Updating memo from server: ${remoteMemo.id} (server: ${remoteMemo.updatedTs}, local: ${existingMemo.updatedTs})")
-                        if (remoteMemo.updatedTs > existingMemo.updatedTs) {
+                        Timber.d("Updating memo from server: ${remoteMemo.id} (server: ${remoteMemo.updateTime}, local: ${existingMemo.updateTime})")
+                        if (remoteMemo.updateTime > existingMemo.updateTime) {
                             val updatedMemo = remoteMemo.copy(
                                 syncStatus = SyncStatus.SYNCED,
                                 lastSyncTime = System.currentTimeMillis()

@@ -18,10 +18,10 @@ class RemoteDataSource @Inject constructor(
                 Memo(
                     id = memoData.name,
                     content = memoData.content,
-                    createdTs = memoData.createdTs,
-                    updatedTs = memoData.updatedTs,
-                    resourceName = memoData.resourceName,
-                    rowStatus = memoData.rowStatus,
+                    createTime = memoData.createTime,
+                    updateTime = memoData.updateTime,
+                    name = memoData.name,
+                    //state = memoData.state, TODO
                     syncStatus = SyncStatus.SYNCED,
                     lastSyncTime = System.currentTimeMillis(),
                     isLocalOnly = false,
@@ -51,10 +51,10 @@ class RemoteDataSource @Inject constructor(
             Memo(
                 id = response.name,
                 content = response.content,
-                createdTs = response.createdTs,
-                updatedTs = response.updatedTs,
-                resourceName = response.resourceName,
-                rowStatus = response.rowStatus,
+                createTime = response.createTime,
+                updateTime = response.updateTime,
+                name = response.name,
+                //rowStatus = response.rowStatus, TODO
                 syncStatus = SyncStatus.SYNCED,
                 lastSyncTime = System.currentTimeMillis(),
                 isLocalOnly = false,
@@ -83,10 +83,10 @@ class RemoteDataSource @Inject constructor(
             Memo(
                 id = response.name,
                 content = response.content,
-                createdTs = response.createdTs,
-                updatedTs = response.updatedTs,
-                resourceName = response.resourceName,
-                rowStatus = response.rowStatus,
+                createTime = response.createTime,
+                updateTime = response.updateTime,
+                name = response.name,
+                //rowStatus = response.rowStatus, TODO
                 syncStatus = SyncStatus.SYNCED,
                 lastSyncTime = System.currentTimeMillis(),
                 isLocalOnly = false,

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MemoDao {
-    @Query("SELECT * FROM memos ORDER BY updatedTs DESC")
+    @Query("SELECT * FROM memos ORDER BY updateTime DESC")
     fun getAllMemosFlow(): Flow<List<Memo>>
 
     @Query("SELECT * FROM memos WHERE id = :id")
