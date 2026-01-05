@@ -10,7 +10,7 @@ import xyz.polyserv.notum.data.model.Memo
 import xyz.polyserv.notum.data.model.SyncQueueItem
 import xyz.polyserv.notum.data.model.SyncAction
 import xyz.polyserv.notum.data.model.SyncStatus
-import xyz.polyserv.notum.utils.TimeUtils
+import xyz.polyserv.notum.util.TimeUtils
 
 @Singleton
 class MemoRepository @Inject constructor(
@@ -26,7 +26,6 @@ class MemoRepository @Inject constructor(
 
     suspend fun addMemo(memo: Memo) {
         Timber.d("Adding memo: $memo")
-        // Устанавливаем UTC время при создании
         val currentTimeUtc = TimeUtils.getCurrentTimeIso()
         val memoWithUtcTime = memo.copy(
             createTime = currentTimeUtc,
@@ -46,7 +45,6 @@ class MemoRepository @Inject constructor(
 
     suspend fun updateMemo(memo: Memo) {
         Timber.d("Updating memo: $memo")
-        // Устанавливаем UTC время при обновлении
         val currentTimeUtc = TimeUtils.getCurrentTimeIso()
         val memoWithUtcTime = memo.copy(
             updateTime = currentTimeUtc
@@ -218,7 +216,10 @@ class MemoRepository @Inject constructor(
                         val remoteTimestamp = remoteMemo.getUpdateTimestamp()
                         val localTimestamp = existingMemo.getUpdateTimestamp()
 
-                        Timber.d("Comparing timestamps for ${remoteMemo.id}: remote=$remoteTimestamp (${remoteMemo.updateTime}), local=$localTimestamp (${existingMemo.updateTime})")
+                        Timber.d("Comparing timestamps for ${remoteMemo.id}:")
+                        Timber.d("  Remote: $remoteTimestamp (${remoteMemo.updateTime})")
+                        Timber.d("  Local:  $localTimestamp (${existingMemo.updateTime})")
+                        Timber.d("  Remote > Local: ${remoteTimestamp > localTimestamp}")
 
                         if (remoteTimestamp > localTimestamp) {
                             Timber.d("Updating memo from server: ${remoteMemo.id}")

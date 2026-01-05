@@ -26,8 +26,14 @@ class LocalDataSource @Inject constructor(
         val existing = memoDao.getMemoById(memo.id)
         if (existing != null) {
             // Update existing memo
-            Timber.d("Memo extTS: ${existing.getUpdateTimestamp()}, newTS: ${memo.getUpdateTimestamp()}")
-            if (existing.getUpdateTimestamp() <= memo.getUpdateTimestamp()) {
+            val existingTs = existing.getUpdateTimestamp()
+            val newTs = memo.getUpdateTimestamp()
+
+            Timber.d("saveMemo - Comparing timestamps:")
+            Timber.d("  Existing: $existingTs (${existing.updateTime})")
+            Timber.d("  New:      $newTs (${memo.updateTime})")
+
+            if (existingTs <= newTs) {
                 memoDao.updateMemo(memo)
                 Timber.d("Memo updated: ${memo.id}")
                 return true

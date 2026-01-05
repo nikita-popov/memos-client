@@ -18,7 +18,7 @@ import xyz.polyserv.notum.data.model.SyncStatus
 import xyz.polyserv.notum.data.repository.MemoRepository
 import xyz.polyserv.notum.sync.NetworkConnectivityManager
 import xyz.polyserv.notum.sync.SyncScheduler
-import xyz.polyserv.notum.utils.TimeUtils
+import xyz.polyserv.notum.util.TimeUtils
 
 data class MemoUiState(
     val memos: List<Memo> = emptyList(),

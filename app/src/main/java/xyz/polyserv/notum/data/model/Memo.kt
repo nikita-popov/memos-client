@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
 import kotlinx.serialization.Serializable
-import xyz.polyserv.notum.utils.TimeUtils
+import xyz.polyserv.notum.util.TimeUtils
 
 enum class SyncStatus {
     SYNCED, PENDING, SYNCING, FAILED

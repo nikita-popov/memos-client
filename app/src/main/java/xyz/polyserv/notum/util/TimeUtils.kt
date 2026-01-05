@@ -1,4 +1,4 @@
-package xyz.polyserv.notum.utils
+package xyz.polyserv.notum.util
 
 import java.time.Instant
 import java.time.LocalDateTime
