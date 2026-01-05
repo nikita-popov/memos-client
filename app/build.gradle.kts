@@ -11,13 +11,13 @@ plugins {
 }
 
 android {
-    namespace = "xyz.polyserv.memos"
+    namespace = "xyz.polyserv.notum"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "xyz.polyserv.memos"
+        applicationId = "xyz.polyserv.notum"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -142,4 +142,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    // Unit Testing
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("app.cash.turbine:turbine:1.0.0")
 }

@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Memos Client"
+rootProject.name = "notum"
 include(":app")
