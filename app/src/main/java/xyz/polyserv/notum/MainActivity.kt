@@ -83,6 +83,21 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        composable(
+                            "edit_memo/{memoId}",
+                            arguments = listOf(
+                                navArgument("memoId") {
+                                    type = NavType.StringType
+                                }
+                            )
+                        ) { backStackEntry ->
+                            val memoId = backStackEntry.arguments?.getString("memoId") ?: return@composable
+                            CreateMemoScreen(
+                                onBackClick = { navController.popBackStack() },
+                                memoId = memoId
+                            )
+                        }
+
                         composable("settings") {
                             SettingsScreen(
                                 onBackClick = {navController.popBackStack() },

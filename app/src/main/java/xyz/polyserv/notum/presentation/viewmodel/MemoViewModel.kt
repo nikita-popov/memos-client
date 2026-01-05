@@ -14,9 +14,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import xyz.polyserv.notum.data.model.Memo
+import xyz.polyserv.notum.data.model.SyncStatus
 import xyz.polyserv.notum.data.repository.MemoRepository
 import xyz.polyserv.notum.sync.NetworkConnectivityManager
 import xyz.polyserv.notum.sync.SyncScheduler
+import xyz.polyserv.notum.utils.TimeUtils
 
 data class MemoUiState(
     val memos: List<Memo> = emptyList(),
@@ -88,7 +90,7 @@ class MemoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                val memo = Memo(content=content)
+                val memo = Memo(content = content)
                 memoRepository.addMemo(memo)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -110,9 +112,19 @@ class MemoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                val memo = Memo(id = id, content=content)
-                memoRepository.updateMemo(memo)
-                _uiState.value = _uiState.value.copy(isLoading = false)
+                val existing = memoRepository.getMemoById(id)
+                if (existing != null) {
+                    val updated = existing.copy(
+                        content = content,
+                        syncStatus = SyncStatus.PENDING,
+                        updateTime = TimeUtils.timestampToIso(System.currentTimeMillis())
+                    )
+                    memoRepository.updateMemo(updated)
+                    _uiState.value = _uiState.value.copy(isLoading = false)
+                } else {
+                    // TODO
+                    Timber.d("Failed to load existing memo for editing")
+                }
             } catch (e: Exception) {
                 Timber.e(e, "Failed to update memo")
                 _uiState.value = _uiState.value.copy(

@@ -20,10 +20,32 @@ import xyz.polyserv.notum.R
 fun CreateMemoScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MemoViewModel = hiltViewModel()
+    viewModel: MemoViewModel = hiltViewModel(),
+    memoId: String? = null
 ) {
     val uiState = viewModel.uiState.value
     var content by remember { mutableStateOf("") }
+    var isLoaded by remember { mutableStateOf(false) }
+
+    // Load memo if ID passed
+    LaunchedEffect(memoId) {
+        if (memoId != null) {
+            viewModel.loadMemoById(memoId)
+        } else {
+            // Clean if create new
+            viewModel.selectMemo(null)
+        }
+    }
+
+    // Fill from loaded content
+    LaunchedEffect(uiState.selectedMemo) {
+        if (memoId != null && uiState.selectedMemo != null && !isLoaded) {
+            if (uiState.selectedMemo.id == memoId) {
+                content = uiState.selectedMemo.content
+                isLoaded = true
+            }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -32,7 +54,9 @@ fun CreateMemoScreen(
     ) {
         // Top App Bar
         TopAppBar(
-            title = { Text(stringResource(id = R.string.new_note)) },
+            title = {
+                Text(if (memoId == null) stringResource(id = R.string.new_note) else stringResource(id = R.string.edit))
+            },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
@@ -42,7 +66,13 @@ fun CreateMemoScreen(
                 IconButton(
                     onClick = {
                         if (content.isNotBlank()) {
-                            viewModel.createMemo(content)
+                            if (memoId != null) {
+                                // Edit
+                                viewModel.updateMemo(memoId, content)
+                            } else {
+                                // Create
+                                viewModel.createMemo(content)
+                            }
                             onBackClick()
                         }
                     },
