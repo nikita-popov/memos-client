@@ -106,7 +106,7 @@ fun MemoDetailScreen(
                         .padding(16.dp)
                         .padding(bottom = 16.dp)
                 ) {
-                    Timber.d("Opened memo: ${memo.id}")
+                    Timber.d("Opened memo: ID=${memo.id}, name=${memo.name}")
                     Timber.d("Opened memo: ${memo.content}")
 
                     SyncStatusIndicator(syncStatus = memo.syncStatus)

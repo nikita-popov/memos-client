@@ -40,10 +40,15 @@ class MemoRepository @Inject constructor(
     suspend fun updateMemo(memo: Memo) {
         Timber.d("Updating memo: $memo")
         localDataSource.saveMemo(memo)
+        val action = if (memo.name.isNotEmpty() || !memo.isLocalOnly) {
+            SyncAction.UPDATE
+        } else {
+            SyncAction.CREATE
+        }
         localDataSource.addToSyncQueue(
             SyncQueueItem(
                 memoId = memo.id,
-                action = SyncAction.UPDATE,
+                action = action,
                 payload = memo.content,
                 timestamp = System.currentTimeMillis()
             )
@@ -70,7 +75,7 @@ class MemoRepository @Inject constructor(
     suspend fun syncWithServer() {
         Timber.d("========== SYNC START ==========")
         try {
-            // First sync local memos to server
+            // First sync local changes to server
             val syncQueue = localDataSource.getSyncQueue()
             Timber.d("Sync queue size: ${syncQueue.size}")
 
@@ -90,11 +95,20 @@ class MemoRepository @Inject constructor(
                                 val serverMemo = remoteDataSource.createMemo(memo.content)
 
                                 Timber.d("CREATE action - Server returned: $serverMemo")
-                                Timber.d("CREATE action - Deleting old local memo: ${memo.id}")
-                                localDataSource.deleteMemo(memo.id)
+                                //Timber.d("CREATE action - Deleting old local memo: ${memo.id}")
+                                //localDataSource.deleteMemo(memo.id)
 
-                                Timber.d("CREATE action - Saving server memo: ${serverMemo.id}")
-                                val syncedMemo = serverMemo.copy(
+                                //Timber.d("CREATE action - Saving server memo: ${serverMemo.id}")
+                                //val syncedMemo = serverMemo.copy(
+                                //    syncStatus = SyncStatus.SYNCED,
+                                //    lastSyncTime = System.currentTimeMillis(),
+                                //    isLocalOnly = false
+                                //)
+                                Timber.d("CREATE action - Updating memo with serverId: ${serverMemo.name}")
+                                val syncedMemo = memo.copy(
+                                    name = serverMemo.name,
+                                    createTime = serverMemo.createTime,
+                                    updateTime = serverMemo.updateTime,
                                     syncStatus = SyncStatus.SYNCED,
                                     lastSyncTime = System.currentTimeMillis(),
                                     isLocalOnly = false
@@ -104,7 +118,7 @@ class MemoRepository @Inject constructor(
                                 // Remove memo from queue
                                 localDataSource.removeSyncQueueItem(queueItem.id)
 
-                                Timber.d("Memo created and synced: ${memo.id} -> ${serverMemo.id}")
+                                Timber.d("CREATE action - Memo created and synced: ${memo.id} -> ${serverMemo.id}")
                             } else {
                                 // Memo was removed locally, remove it from queue
                                 Timber.w("CREATE action - Memo not found: ${queueItem.memoId}")
@@ -113,18 +127,19 @@ class MemoRepository @Inject constructor(
                         }
 
                         SyncAction.UPDATE -> {
-                            if (memo != null && memo.serverId.isNotEmpty()) {
+                            if (memo != null && memo.name.isNotEmpty()) {
                                 Timber.d("UPDATE action - Setting SYNCING status")
                                 val syncingMemo = memo.copy(syncStatus = SyncStatus.SYNCING)
                                 localDataSource.saveMemo(syncingMemo)
 
-                                Timber.d("UPDATE action - Calling remote API for serverId: ${memo.serverId}")
-                                val serverMemo = remoteDataSource.updateMemo(memo.serverId, memo.content)
+                                Timber.d("UPDATE action - Calling remote API for serverId: ${memo.name}")
+                                val serverMemo = remoteDataSource.updateMemo(memo.name, memo.content)
 
                                 Timber.d("UPDATE action - Server returned: $serverMemo")
 
                                 Timber.d("UPDATE action - Updating local memo")
                                 val syncedMemo = serverMemo.copy(
+                                    id = syncingMemo.id,
                                     syncStatus = SyncStatus.SYNCED,
                                     lastSyncTime = System.currentTimeMillis()
                                 )
@@ -133,23 +148,39 @@ class MemoRepository @Inject constructor(
                                 // Remove memo from queue
                                 localDataSource.removeSyncQueueItem(queueItem.id)
 
-                                Timber.d("Memo updated and synced: ${memo.id}")
+                                Timber.d("UPDATE action - Memo updated and synced: ${memo.id}")
                             } else {
                                 // Memo still not synced or removed
-                                Timber.w("UPDATE action - Memo not found or no serverId: ${queueItem.memoId}")
-                                localDataSource.removeSyncQueueItem(queueItem.id)
+                                //Timber.w("UPDATE action - Memo not found or no serverId: ${queueItem.memoId}")
+                                //localDataSource.removeSyncQueueItem(queueItem.id)
+                                if (memo != null && memo.name.isEmpty()) {
+                                    Timber.w("UPDATE action - No serverId yet, checking if CREATE is pending")
+                                    val hasPendingCreate = syncQueue.any {
+                                        it.memoId == memo.id && it.action == SyncAction.CREATE && it.id < queueItem.id
+                                    }
+                                    if (hasPendingCreate) {
+                                        Timber.d("UPDATE action - CREATE is pending, keeping UPDATE in queue")
+                                        // Don't remove from queue, process after CREATE
+                                    } else {
+                                        Timber.w("UPDATE action - No pending CREATE, removing UPDATE from queue")
+                                        localDataSource.removeSyncQueueItem(queueItem.id)
+                                    }
+                                } else {
+                                    Timber.w("UPDATE action - Memo not found or no serverId: ${queueItem.memoId}")
+                                    localDataSource.removeSyncQueueItem(queueItem.id)
+                                }
                             }
                         }
 
                         SyncAction.DELETE -> {
                             // Try to find by serverId for removing
                             val deletedMemo = memo
-                            if (deletedMemo?.serverId?.isNotEmpty() == true) {
-                                remoteDataSource.deleteMemo(deletedMemo.serverId)
+                            if (deletedMemo?.name?.isNotEmpty() == true) {
+                                remoteDataSource.deleteMemo(deletedMemo.name)
                             }
                             // Remove from queue in any case
                             localDataSource.removeSyncQueueItem(queueItem.id)
-                            Timber.d("Memo deleted on server: ${queueItem.memoId}")
+                            Timber.d("DELETE action - Memo deleted on server: ${queueItem.memoId}")
                         }
                     }
                 } catch (e: Exception) {
@@ -172,19 +203,21 @@ class MemoRepository @Inject constructor(
 
                 for (remoteMemo in remoteMemos) {
                     // Check if memo exists locally
-                    val existingMemo = localDataSource.getMemoById(remoteMemo.id)
+                    //val existingMemo = localDataSource.getMemoById(remoteMemo.id)
+                    val existingMemo = localDataSource.getMemoByName(remoteMemo.name)
 
                     if (existingMemo == null) {
                         Timber.d("New memo from server: ${remoteMemo.id}")
                         val syncedMemo = remoteMemo.copy(
                             syncStatus = SyncStatus.SYNCED,
                             lastSyncTime = System.currentTimeMillis(),
-                            isLocalOnly = false
+                            isLocalOnly = false,
+                            name = remoteMemo.id
                         )
                         localDataSource.saveMemo(syncedMemo)
                     } else {
-                        Timber.d("Updating memo from server: ${remoteMemo.id} (server: ${remoteMemo.updateTime}, local: ${existingMemo.updateTime})")
                         if (remoteMemo.getUpdateTimestamp() > existingMemo.getUpdateTimestamp()) {
+                            Timber.d("Updating memo from server: ${remoteMemo.id} (server: ${remoteMemo.updateTime}, local: ${existingMemo.updateTime})")
                             val updatedMemo = remoteMemo.copy(
                                 syncStatus = SyncStatus.SYNCED,
                                 lastSyncTime = System.currentTimeMillis()

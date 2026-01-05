@@ -17,6 +17,9 @@ interface MemoDao {
     @Query("SELECT * FROM memos WHERE id = :id")
     suspend fun getMemoById(id: String): Memo?
 
+    @Query("SELECT * FROM memos WHERE name = :name LIMIT 1")
+    suspend fun getMemoByName(name: String): Memo?
+
     @Query("SELECT * FROM memos WHERE content LIKE '%' || :query || '%'")
     fun searchMemos(query: String): Flow<List<Memo>>
 

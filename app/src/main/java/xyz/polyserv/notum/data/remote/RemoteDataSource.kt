@@ -36,16 +36,14 @@ class RemoteDataSource @Inject constructor(
             Timber.d("Successfully created memo: ${response.name}")
 
             Memo(
-                id = response.name,
+                name = response.name,
                 content = response.content,
                 createTime = response.createTime,
                 updateTime = response.updateTime,
-                name = response.name,
                 //rowStatus = response.rowStatus, TODO
                 syncStatus = SyncStatus.SYNCED,
                 lastSyncTime = System.currentTimeMillis(),
-                isLocalOnly = false,
-                serverId = response.name
+                isLocalOnly = false
             )
         } catch (e: Exception) {
             Timber.e(e, "Failed to create memo. Content: ${content.take(50)}")
@@ -53,11 +51,11 @@ class RemoteDataSource @Inject constructor(
         }
     }
 
-    suspend fun updateMemo(serverId: String, content: String): Memo {
+    suspend fun updateMemo(name: String, content: String): Memo {
         return try {
-            Timber.d("Updating memo: $serverId with content: ${content.take(50)}...")
+            Timber.d("Updating memo: $name with content: ${content.take(50)}...")
 
-            val response = apiService.updateMemo(serverId, MemoRequest(content = content))
+            val response = apiService.updateMemo(name.stripMemosPrefix(), MemoRequest(content = content))
             Timber.d("Update response received: $response")
 
             if (response.name.isEmpty()) {
@@ -68,31 +66,31 @@ class RemoteDataSource @Inject constructor(
             Timber.d("Successfully updated memo: ${response.name}")
 
             Memo(
-                id = response.name,
                 content = response.content,
                 createTime = response.createTime,
                 updateTime = response.updateTime,
                 name = response.name,
-                //rowStatus = response.rowStatus, TODO
                 syncStatus = SyncStatus.SYNCED,
                 lastSyncTime = System.currentTimeMillis(),
                 isLocalOnly = false,
-                serverId = response.name
             )
         } catch (e: Exception) {
-            Timber.e(e, "Failed to update memo: $serverId")
+            Timber.e(e, "Failed to update memo: $name")
             throw Exception("Failed to update memo: ${e.message}", e)
         }
     }
 
-    suspend fun deleteMemo(serverId: String) {
+    suspend fun deleteMemo(name: String) {
         return try {
-            Timber.d("Deleting memo: $serverId")
-            apiService.deleteMemo(serverId)
-            Timber.d("Successfully deleted memo: $serverId")
+            Timber.d("Deleting memo: $name")
+            apiService.deleteMemo(name.stripMemosPrefix())
+            Timber.d("Successfully deleted memo: $name")
         } catch (e: Exception) {
-            Timber.e(e, "Failed to delete memo: $serverId")
+            Timber.e(e, "Failed to delete memo: $name")
             throw e
         }
     }
+
+    private fun String.stripMemosPrefix(): String =
+        removePrefix("memos/")
 }

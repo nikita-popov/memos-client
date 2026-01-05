@@ -159,7 +159,6 @@ fun MemoResponse.toMemo(): Memo {
         syncStatus = SyncStatus.SYNCED,
         lastSyncTime = System.currentTimeMillis(),
         isLocalOnly = false,
-        serverId = uid
     )
 }
 

@@ -23,7 +23,7 @@ enum class MemoState {
 @Serializable
 data class Memo(
     @PrimaryKey
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = UUID.randomUUID().toString(), // Local ID
 
     // Main
     val content: String,
@@ -45,10 +45,10 @@ data class Memo(
     val syncStatus: SyncStatus = SyncStatus.PENDING,
     val lastSyncTime: Long = 0,
     val isLocalOnly: Boolean = true,
-    val serverId: String = ""
 ) {
     override fun toString(): String {
-        return "Memo(id=$id, serverId=$serverId, content=${content.take(30)}, syncStatus=$syncStatus, isLocalOnly=$isLocalOnly)"
+        return "Memo(id=$id, name=$name, content=${content.take(30)}, syncStatus=$syncStatus, isLocalOnly=$isLocalOnly)"
+
     }
 
     fun getCreateTimestamp(): Long {
