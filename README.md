@@ -4,17 +4,34 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-2.0.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![Android](https://img.shields.io/badge/platform-Android-green.svg?logo=android)](https://www.android.com/)
 
-A native Android client for [Memos](https://github.com/usememos/memos) - an open-source, self-hosted memo hub.
+A standalone, offline-first note-taking app for Android with optional synchronization to [Memos](https://github.com/usememos/memos) servers.
 
 > **⚠ Work in Progress**  
 > This project is in early development stage. Features are being actively developed and the API may change.
 
-- **Offline-First Architecture** - Create and view memos without internet connection
+## Features
+
+- **Fully Offline** - Works completely without internet connection or server
+- **Optional Sync** - Connect to [Memos](https://github.com/usememos/memos) server if you want cloud backup
 - **Background Sync** - Automatic synchronization with Memos server using WorkManager
 - **Modern UI** - Built with Jetpack Compose and Material 3 design
 - **Theme Support** - Light, dark, and system theme modes
 - **Multi-Language** - Localization support
 - **Material You** - Dynamic color theming on Android 12+
+
+## Use Cases
+
+### Standalone Mode
+
+Use **notum** as a simple, privacy-focused note-taking app without any server.
+All your notes stay on your device.
+
+### Sync Mode
+
+Optionally connect to a **Memos** server to:
+- Backup your notes to the cloud
+- Sync across multiple devices
+- Access notes from web interface
 
 ## Installation
 
